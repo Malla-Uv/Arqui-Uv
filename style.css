@@ -1,1 +1,351 @@
-s
+/* FUENTE Y FONDO GENERAL */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding-top: 80px;
+  transition: background 0.3s, color 0.3s;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 28px;
+}
+
+/* PROGRESO */
+.progreso {
+  text-align: center;
+  font-size: 16px;
+  background: white;
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  transition: background 0.3s;
+}
+
+.progress-bar {
+  width: 80%;
+  height: 20px;
+  background: #e0e0e0;
+  margin: 10px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.2);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #43aa8b;
+  transition: width 0.4s ease, background-color 0.3s;
+}
+
+/* MALLA HORIZONTAL */
+.malla-horizontal {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 20px 0;
+}
+
+.semestre {
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.semestre h2 {
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* BLOQUES DE RAMO */
+.ramos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ramo {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #3f51b5;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  color: white;
+  font-size: 11px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  margin: auto;
+}
+
+.ramo:hover {
+  transform: scale(1.04);
+}
+
+.ramo.aprobado::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  width: 90%;
+  height: 2px;
+  background-color: white;
+  transform: rotate(-10deg);
+  z-index: 2;
+}
+
+.ramo-header {
+  background-color: rgba(0,0,0,0.2);
+  padding: 4px 6px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 10px;
+}
+
+.ramo-body {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 5px;
+  font-size: 10px;
+  word-break: break-word;
+}
+
+.ramo-footer {
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0,0,0,0.2);
+  padding: 3px 6px;
+  font-size: 10px;
+}
+
+.ramo-footer .badge {
+  background: #eee;
+  color: black;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+}
+
+.ramo.desactivado {
+  opacity: 0.4;
+  pointer-events: none;
+  filter: grayscale(100%);
+}
+
+/* BOTONES */
+.botones {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  background: #007bff;
+  color: white;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+button.danger {
+  background: #dc3545;
+}
+
+button.success {
+  background: #28a745;
+}
+
+button.toggle-mode {
+  background: #6c757d;
+}
+
+/* CALCULADORA DE PROMEDIO */
+.calculadora {
+  margin-top: 40px;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.formulario-notas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nota-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nota-item input {
+  width: 80px;
+}
+
+/* TABLA DE PROMEDIOS */
+.tabla-promedios {
+  margin-top: 30px;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tabla-promedios table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-promedios th, .tabla-promedios td {
+  padding: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  text-align: center;
+}
+
+.tabla-promedios input {
+  width: 60px;
+}
+
+/* MODO OSCURO */
+body.dark-mode {
+  background: #121212;
+  color: white;
+}
+
+body.dark-mode .progreso,
+body.dark-mode .calculadora,
+body.dark-mode .tabla-promedios {
+  background: #1e1e1e;
+  color: white;
+  box-shadow: 0 0 6px rgba(255,255,255,0.05);
+}
+
+body.dark-mode .progress-bar {
+  background-color: #444;
+}
+
+body.dark-mode .progress-bar-fill {
+  background-color: #90ee90;
+}
+
+body.dark-mode .semestre h2 {
+  color: #ccc;
+}
+
+body.dark-mode .ramo {
+  border: 1px solid #444;
+  background-color: #2b2b2b;
+  color: #f0f0f0;
+}
+
+body.dark-mode .ramo-footer .badge {
+  background: #555;
+  color: white;
+}
+
+body.dark-mode table {
+  background-color: #2b2b2b;
+  color: white;
+}
+
+body.dark-mode input {
+  background-color: #444;
+  color: white;
+  border: 1px solid #666;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .ramos {
+    gap: 8px;
+  }
+  .ramo {
+    width: 100px;
+    height: 100px;
+  }
+  .ramo-footer .badge {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+  .ramo-body {
+    font-size: 9px;
+    padding: 4px;
+  }
+  /* INPUT DE PROMEDIO INDIVIDUAL POR RAMO */
+.promedio-input {
+  margin: 6px auto;
+  text-align: center;
+}
+
+.promedio-input input {
+  width: 60px;
+  padding: 4px;
+  font-size: 12px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* TACHADO VISUAL PARA RAMOS APROBADOS */
+.ramo.aprobado::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  transform: rotate(-10deg);
+  z-index: 2;
+}
+
+/* RAMOS BLOQUEADOS VISUALMENTE */
+.ramo.desactivado {
+  opacity: 0.4;
+  pointer-events: none;
+  filter: grayscale(100%);
+}
+
+/* OSCURO: INPUT PROMEDIO INDIVIDUAL */
+body.dark-mode .promedio-input input {
+  background-color: #333;
+  color: white;
+  border: 1px solid #666;
+}
+}
