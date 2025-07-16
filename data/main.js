@@ -186,7 +186,7 @@ new Vue({
       const i = this.aprobados.indexOf(codigo);
       if (i === -1) {
         this.aprobados.push(codigo);
-        if (typeof toastr !== "undefined") toastr.success(Aprobaste ${ramo[0]} (${codigo}));
+        if (typeof toastr !== "undefined") toastr.success(`Aprobaste ${ramo[0]} (${codigo})`);
 
         const nuevos = this.todosLosRamos().filter(r => {
           if (this.estaAprobado(r[1])) return false;
@@ -194,7 +194,7 @@ new Vue({
           return prereqs.includes(codigo) && prereqs.every(p => this.aprobados.includes(p));
         });
         nuevos.forEach(r => {
-          if (typeof toastr !== "undefined") toastr.info(🔓 Se desbloqueó: ${r[0]} (${r[1]}));
+          if (typeof toastr !== "undefined") toastr.info(`🔓 Se desbloqueó: ${r[0]} (${r[1]})`);
         });
 
       } else {
