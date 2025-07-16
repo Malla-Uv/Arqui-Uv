@@ -187,9 +187,9 @@ new Vue({
       if (i === -1) {
         this.aprobados.push(codigo);
         if (window.toastr && typeof toastr.success === "function") {
-          toastr.success(Aprobaste ${ramo[0]} (${codigo}));
+          toastr.successtoastr.success(`Aprobaste ${ramo[0]} (${codigo})`);
         } else {
-          console.log(✔ Aprobaste ${ramo[0]} (${codigo}));
+          console.log(`✔ Aprobaste ${ramo[0]} (${codigo})`);
         }
 
         const nuevos = this.todosLosRamos().filter(r => {
