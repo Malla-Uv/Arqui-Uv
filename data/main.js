@@ -200,9 +200,10 @@ new Vue({
 
         nuevos.forEach(r => {
           if (window.toastr && typeof toastr.info === "function") {
-            toastr.info(🔓 Se desbloqueó: ${r[0]} (${r[1]}));
+           toastr.info(`🔓 Se desbloqueó: ${r[0]} (${r[1]})`);
           } else {
-            console.log(🔓 Se desbloqueó: ${r[0]} (${r[1]}));
+            console.log(`🔓 Se desbloqueó: ${r[0]} (${r[1]})`);
+
           }
         });
 
