@@ -200,7 +200,7 @@ new Vue({
       } else {
         this.aprobados.splice(i, 1);
         delete this.promedios[codigo];
-        if (typeof toastr !== "undefined") toastr.warning(Desmarcaste ${codigo});
+        if (typeof toastr !== "undefined") toastr.warning(`Desmarcaste ${codigo}`);
       }
 
       localStorage.setItem('aprobados', JSON.stringify(this.aprobados));
