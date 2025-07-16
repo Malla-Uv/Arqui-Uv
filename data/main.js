@@ -43,13 +43,13 @@ const data = {
     ["Complementario 6", "ARQC33", 2, 0, "COMP6", ["ARQC32"], ""],
   ],
   "Semestre 10": [
-    ["Taller Integrado 10 / Finalización De Ciclo 2", "TFC32", 26, 0, "TFC2", ["TIL31"], ""],
+    ["Taller Integrado 10 / Finalización De Ciclo 2", "TFC32", 26, 0, "TFC2", ["ARQC31","TIL31"], ""],
     ["Electivo 6", "ARQE34", 2, 0, "E", ["ARQE33"], ""],
   ],
   "Semestre 11": [
-    ["Taller Integrado De Titulación 1", "TIT1", 19, 0, "T1", ["TFC32"], ""],
-    ["Gestión Profesional", "ARQC41", 3, 0, "GP", ["ARQC31", "ARQC32", "ARQC33"], ""],
-    ["Práctica Profesional", "ARQC42", 8, 0, "PP", ["ARQC31", "ARQC32", "ARQC33"], ""],
+    ["Taller Integrado De Titulación 1", "TIT1", 19, 0, "T1", ["TFC32","ARQE33","ARQC33"], ""],
+    ["Gestión Profesional", "ARQC41", 3, 0, "GP", ["TFC32","ARQE34","ARQC31", "ARQC32", "ARQC33"], ""],
+    ["Práctica Profesional", "ARQC42", 8, 0, "PP", ["TFC32","ARQE34","ARQC31", "ARQC32", "ARQC33"], ""],
   ],
   "Semestre 12": [
     ["Taller Integrado De Titulación 2", "TIT2", 30, 0, "T12", ["TIT1"], ""],
@@ -263,7 +263,7 @@ template: `
     <div class="botones no-print">
       <button @click="resetear" class="danger">Reiniciar avance</button>
       <button @click="toggleModo" class="toggle-mode">Modo {{ modo === 'oscuro' ? 'Claro' : 'Oscuro' }}</button>
-      <button @click="exportarPDF" class="success">Exportar a PDF</button>
+       <!-- <button @click="exportarPDF" class="success">Exportar a PDF</button>  -->
       <button @click="filtro = 'todos'">Ver todos</button>
       <button @click="filtro = 'aprobados'">Ver aprobados</button>
       <button @click="filtro = 'faltantes'">Ver faltantes</button>
