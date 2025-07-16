@@ -2,172 +2,126 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>📐Malla Interactiva Arquitectura UV🏛️</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Malla Interactiva Arquitectura UV</title>
 
-  <!-- PWA -->
+  <!-- Manifest y Favicon -->
   <link rel="manifest" href="data/manifest.json" />
-  <meta name="theme-color" content="#5cb85c" />
-  <link rel="icon" href="data/icon-192.png" type="image/png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Malla Arqui UV" />
-  <link rel="apple-touch-icon" href="data/icon-192.png" />
-  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="icon" href="data/icon-192.png" />
 
-  <!-- CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+  <!-- Estilos -->
   <link rel="stylesheet" href="data/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
+  <!-- Librerías externas -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 </head>
+
 <body>
+  <div id="app" class="container">
 
-  <!-- TÍTULO -->
-  <header class="container text-center my-4">
-    <h1 class="fw-bold display-5">📐 Malla Interactiva Arquitectura UV 🏛️</h1>
-  </header>
+    <h1>Malla Interactiva Arquitectura UV</h1>
 
-  <!-- APP -->
-  <div class="container mb-5">
-    <div id="app">
-      <!-- 👇 TEMPLATE PEGADO DESDE main.js 👇 -->
-      <div>
-        <!-- PROGRESO Y PROMEDIO GENERAL -->
-        <div class="progreso">
-          <strong>Avance:</strong> {{ creditosAprobados }} / {{ totalCreditos }} créditos ({{ avance }}%)<br/>
-          <strong>Promedio general:</strong> {{ promedioGeneral }}
-          <div class="progress-bar">
-            <div class="progress-bar-fill" :style="{ width: avance + '%' }"></div>
-          </div>
-        </div>
+    <!-- Barra de progreso -->
+    <div class="progreso">
+      Avance: {{ avance }}% ({{ creditosAprobados }}/{{ totalCreditos }} créditos)
+      <div class="progress-bar">
+        <div class="progress-bar-fill" :style="{ width: avance + '%' }"></div>
+      </div>
+    </div>
 
-        <!-- BOTONES -->
-        <div class="botones no-print">
-          <button @click="resetear" class="danger">Reiniciar avance</button>
-          <button @click="toggleModo" class="toggle-mode">Modo {{ modo === 'oscuro' ? 'Claro' : 'Oscuro' }}</button>
-          <button @click="exportarPDF" class="success">Exportar a PDF</button>
-          <button @click="filtro = 'todos'">Ver todos</button>
-          <button @click="filtro = 'aprobados'">Ver aprobados</button>
-          <button @click="filtro = 'faltantes'">Ver faltantes</button>
-        </div>
+    <!-- Botones -->
+    <div class="botones">
+      <button @click="filtro = 'todos'">Todos</button>
+      <button @click="filtro = 'aprobados'">Aprobados</button>
+      <button @click="filtro = 'faltantes'">Faltantes</button>
+      <button class="danger" @click="resetear()">Reiniciar</button>
+      <button class="success" @click="exportarPDF()">Exportar PDF</button>
+      <button class="toggle-mode" @click="toggleModo()">Modo {{ modo === 'oscuro' ? 'Claro' : 'Oscuro' }}</button>
+    </div>
 
-        <!-- MALLA -->
-        <div class="malla-horizontal">
-          <div v-for="(ramos, semestre) in semestres" :key="semestre" class="semestre">
-            <h2>{{ semestre.toUpperCase() }}</h2>
-            <div class="ramos">
-              <div
-                v-for="ramo in ramos"
-                v-if="cumpleFiltro(ramo)"
-                :key="ramo[1]"
-                class="ramo"
-                :style="{ backgroundColor: getColor(ramo[4]) }"
-                :class="{ 
-                  aprobado: estaAprobado(ramo[1]), 
-                  desactivado: !puedeTomarse(ramo)
-                }"
-                @click="toggleAprobado(ramo[1])"
-              >
-                <div class="ramo-header">
-                  <span>{{ ramo[1] }}</span>
-                  <span>{{ ramo[2] }}cr</span>
-                </div>
-                <div class="ramo-body">
-                  {{ ramo[0] }}
-                </div>
-                <div class="ramo-footer">
-                  <span class="badge" v-if="ramo[5].length > 0">
-                    {{ cuentaAprobados(ramo[5]) }}/{{ ramo[5].length }}
-                  </span>
-                  <span class="badge" v-else>✓</span>
-                  <input
-                    v-if="estaAprobado(ramo[1])"
-                    class="badge promedio-input"
-                    :value="promedios[ramo[1]]"
-                    @click.stop
-                    @input="guardarPromedio(ramo[1], $event.target.value)"
-                    placeholder="Nota"
-                  />
-                </div>
-              </div>
+    <!-- Malla por semestre -->
+    <div class="malla-horizontal">
+      <div class="semestre" v-for="(ramos, semestre) in semestres" :key="semestre">
+        <h2>{{ semestre }}</h2>
+        <div class="ramos">
+          <div
+            class="ramo"
+            :style="{ backgroundColor: getColor(ramo[3]) }"
+            v-for="ramo in ramos"
+            :key="ramo[1]"
+            :class="{ aprobado: estaAprobado(ramo[1]), desactivado: !puedeTomarse(ramo) }"
+            @click="toggleAprobado(ramo[1])"
+          >
+            <div class="ramo-header">
+              <span>{{ ramo[1] }}</span>
+              <span>{{ ramo[2] }}cr</span>
             </div>
-          </div>
-        </div>
-
-        <!-- CALCULADORA DE NOTAS -->
-        <div class="calculadora">
-          <h3 class="text-center mb-3">📊 Calculadora de Notas</h3>
-          <div class="formulario-notas">
-            <div class="nota-item" v-for="(item, index) in notas" :key="index">
-              <input type="number" v-model.number="item.nota" placeholder="Nota" min="1" max="7" step="0.1" />
-              <input type="number" v-model.number="item.porcentaje" placeholder="%" min="0" max="100" />
-              <button class="danger" @click="eliminarNota(index)">🗑️</button>
+            <div class="ramo-body">{{ ramo[0] }}</div>
+            <div class="ramo-footer">
+              <span>{{ ramo[3] }}</span>
+              <span class="badge">{{ cuentaAprobados(ramo[5]) }}/{{ ramo[5].length }}</span>
             </div>
-            <button class="success" @click="agregarNota">Agregar Nota</button>
-          </div>
-          <div class="mt-3">
-            <label for="notaDeseada"><strong>Nota deseada:</strong></label>
-            <input id="notaDeseada" type="number" v-model.number="notaDeseada" min="1" max="7" step="0.1" />
-            <p><strong>Ponderación actual:</strong> {{ ponderacionActual }}%</p>
-            <p><strong>Promedio actual:</strong> {{ promedioActual.toFixed(2) }}</p>
-            <p><strong>Nota necesaria para llegar a {{ notaDeseada }}:</strong> {{ notaNecesaria }}</p>
-          </div>
-        </div>
-
-        <!-- TABLA DE PROMEDIOS -->
-        <div class="tabla-promedios">
-          <h3 class="text-center mb-3">📘 Promedios por Ramo Aprobado</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Ramo</th>
-                <th>Código</th>
-                <th>Nota</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="ramo in todosLosRamos()" v-if="estaAprobado(ramo[1])">
-                <td>{{ ramo[0] }}</td>
-                <td>{{ ramo[1] }}</td>
-                <td>
-                  <input
-                    type="number"
-                    :value="promedios[ramo[1]]"
-                    @input="guardarPromedio(ramo[1], $event.target.value)"
-                    placeholder="Nota"
-                    min="1" max="7" step="0.1"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="text-center mt-3">
-            <strong>Promedio general (ramos aprobados):</strong> {{ promedioGeneral }}
+            <div class="promedio-input">
+              <input
+                type="number"
+                step="0.1"
+                min="1"
+                max="7"
+                :value="promedios[ramo[1]] || ''"
+                @input="guardarPromedio(ramo[1], $event.target.value)"
+                placeholder="Nota"
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Calculadora de promedio ponderado -->
+    <div class="calculadora">
+      <h2>Cálculo de nota final</h2>
+      <div class="formulario-notas">
+        <div class="nota-item" v-for="(n, i) in notas" :key="i">
+          <input type="number" v-model.number="n.nota" placeholder="Nota" min="1" max="7" step="0.1" />
+          <input type="number" v-model.number="n.porcentaje" placeholder="%" min="1" max="100" />
+          <button @click="eliminarNota(i)">Eliminar</button>
+        </div>
+        <button @click="agregarNota()">Agregar Nota</button>
+      </div>
+      <p>Ponderado actual: {{ ponderacionActual }}%</p>
+      <p>Promedio actual: {{ promedioActual.toFixed(2) }}</p>
+      <input type="number" v-model.number="notaDeseada" placeholder="Nota deseada" min="1" max="7" step="0.1" />
+      <p>Nota necesaria: <strong>{{ notaNecesaria }}</strong></p>
+    </div>
+
+    <!-- Tabla de promedios -->
+    <div class="tabla-promedios">
+      <h2>Promedios por ramo</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Ramo</th>
+            <th>Código</th>
+            <th>Nota</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="ramo in todasLasAsignaturas()" :key="ramo[1]" v-if="promedios[ramo[1]]">
+            <td>{{ ramo[0] }}</td>
+            <td>{{ ramo[1] }}</td>
+            <td>{{ promedios[ramo[1]] }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Promedio general:</strong> {{ promedioGeneral }}</p>
+    </div>
   </div>
 
-  <!-- LIBRERÍAS JS -->
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue-chartjs@3.5.1/dist/vue-chartjs.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- ARCHIVO PRINCIPAL -->
-  <script src="data/main.js" defer></script>
-
-  <!-- SERVICE WORKER -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('data/service-worker.js')
-          .then(reg => console.log('✔ Service Worker registrado:', reg))
-          .catch(err => console.warn('✘ Error al registrar Service Worker:', err));
-      });
-    }
-  </script>
+  <!-- Script principal -->
+  <script type="module" src="data/main.js"></script>
 </body>
 </html>
