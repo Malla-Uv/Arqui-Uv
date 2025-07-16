@@ -129,14 +129,30 @@ new Vue({
     }
   },
   mounted() {
-    // Restaurar todo desde localStorage
-    const guardados = localStorage.getItem('aprobados');
-    const notasGuardadas = localStorage.getItem('promedios');
+    // Al cargar la app, recuperamos datos guardados en localStorage
+    const aprobadosGuardados = localStorage.getItem('aprobados');
+    const promediosGuardados = localStorage.getItem('promedios');
     const modoGuardado = localStorage.getItem('modo');
 
-    if (guardados) this.aprobados = JSON.parse(guardados);
-    if (notasGuardadas) this.promedios = JSON.parse(notasGuardadas);
-    if (modoGuardado) this.modo = modoGuardado;
+    if (aprobadosGuardados) {
+      try {
+        this.aprobados = JSON.parse(aprobadosGuardados);
+      } catch(e) {
+        this.aprobados = [];
+      }
+    }
+
+    if (promediosGuardados) {
+      try {
+        this.promedios = JSON.parse(promediosGuardados);
+      } catch(e) {
+        this.promedios = {};
+      }
+    }
+
+    if (modoGuardado) {
+      this.modo = modoGuardado;
+    }
 
     document.body.classList.toggle('dark-mode', this.modo === 'oscuro');
   },
@@ -187,6 +203,7 @@ new Vue({
         toastr.warning(`Desmarcaste ${codigo}`);
       }
 
+      // Guardamos el estado en localStorage
       localStorage.setItem('aprobados', JSON.stringify(this.aprobados));
       localStorage.setItem('promedios', JSON.stringify(this.promedios));
     },
@@ -273,100 +290,28 @@ new Vue({
           >
             <div class="ramo-header">
               <span>{{ ramo[1] }}</span>
-              <span>●</span>
+              <span>{{ ramo[2] }}cr</span>
             </div>
-            <div class="ramo-body">{{ ramo[0] }}</div>
+            <div class="ramo-body">
+              {{ ramo[0] }}
+            </div>
             <div class="ramo-footer">
-              <span class="badge">
-                {{ cuentaAprobados(ramo[5]) }} / {{ ramo[5]?.length || 0 }}
+              <span class="badge" v-if="ramo[5].length > 0">
+                {{ cuentaAprobados(ramo[5]) }}/{{ ramo[5].length }}
               </span>
-              <span class="badge">{{ ramo[2] }}</span>
+              <span class="badge" v-else>✓</span>
+              <input
+                v-if="estaAprobado(ramo[1])"
+                class="badge promedio-input"
+                :value="promedios[ramo[1]]"
+                @click.stop
+                @input="guardarPromedio(ramo[1], $event.target.value)"
+                placeholder="Nota"
+              />
             </div>
           </div>
-          <!-- Campo nota final -->
-          <div
-            v-for="ramo in ramos"
-            v-if="estaAprobado(ramo[1])"
-            :key="'prom-'+ramo[1]"
-            class="promedio-input"
-          >
-            <label>
-              {{ ramo[1] }}:
-              <input
-                type="number"
-                v-model.number="promedios[ramo[1]]"
-                @change="guardarPromedio(ramo[1], promedios[ramo[1]])"
-                min="1"
-                max="7"
-                step="0.1"
-                placeholder="Prom."
-              />
-            </label>
-          </div>
         </div>
       </div>
     </div>
-
-    <!-- TABLA DE PROMEDIOS -->
-    <div class="tabla-promedios" v-if="aprobados.length">
-      <h2>Notas Finales de Ramos Aprobados</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Nombre</th>
-            <th>Nota</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="codigo in aprobados" :key="codigo">
-            <td>{{ codigo }}</td>
-            <td>{{ todosLosRamos().find(r => r[1] === codigo)?.[0] }}</td>
-            <td>
-              <input type="number" v-model.number="promedios[codigo]" min="1" max="7" step="0.1" @change="guardarPromedio(codigo, promedios[codigo])">
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <p><strong>Promedio General:</strong> {{ promedioGeneral }}</p>
-    </div>
-
-    <!-- CALCULADORA DE PROMEDIO -->
-    <div class="calculadora">
-      <h2>Calculadora de Promedio</h2>
-      <div class="formulario-notas">
-        <label>Nota que deseas obtener:
-          <input type="number" v-model.number="notaDeseada" min="1" max="7" step="0.1" />
-        </label>
-
-        <div v-for="(item, index) in notas" :key="index" class="nota-item">
-          <label>Nota {{ index + 1 }}:
-            <input type="number" v-model.number="item.nota" min="1" max="7" step="0.1" />
-          </label>
-          <label>Ponderación (%):
-            <input type="number" v-model.number="item.porcentaje" min="0" max="100" />
-          </label>
-          <button @click="eliminarNota(index)" class="danger">X</button>
-        </div>
-
-        <button @click="agregarNota" class="success">Agregar nota</button>
-      </div>
-
-      <div class="resultados">
-        <p><strong>Promedio actual:</strong> {{ promedioActual.toFixed(2) }}</p>
-        <p><strong>Ponderación total:</strong> {{ ponderacionActual }}%</p>
-        <p v-if="ponderacionActual < 100">
-          Necesitas 
-          <strong v-if="typeof notaNecesaria === 'number'">{{ notaNecesaria.toFixed(2) }}</strong>
-          <strong v-else>{{ notaNecesaria }}</strong>
-          en el {{ 100 - ponderacionActual }}% restante.
-        </p>
-        <p v-else-if="ponderacionActual === 100">
-          ¡Ya completaste el 100%! Promedio final estimado: {{ promedioActual.toFixed(2) }}
-        </p>
-        <p v-else style="color: red;">La ponderación excede el 100%. Revisa los datos.</p>
-      </div>
-    </div>
-  </div>
-  `
+  </div>`
 });
