@@ -75,308 +75,140 @@ const colores = {
 };
 
 new Vue({
-  el: '#app',
-  data() {
-    return {
-      semestres: data,
-      colores: colores,
-      aprobados: [],
-      promedios: {},
-      modo: 'claro',
-      filtro: 'todos',
-      notaDeseada: 4.0,
-      notas: [{ nota: null, porcentaje: null }]
-    }
+  el: "#app",
+  data: {
+    semestres: datos,
+    config: config,
+    colores: colores,
+    creditosPorTipo: creditos,
+    aprobados: JSON.parse(localStorage.getItem("aprobados") || "[]"),
+    promedios: JSON.parse(localStorage.getItem("promedios") || "{}"),
+    filtro: "todos",
+    modo: localStorage.getItem("modo") || "claro",
+    notas: [],
+    notaDeseada: 4
   },
   computed: {
     totalCreditos() {
-      return this.todosLosRamos().reduce((sum, r) => sum + r[2], 0);
+      return Object.values(this.creditosPorTipo).reduce((a, b) => a + b, 0);
     },
     creditosAprobados() {
-      return this.todosLosRamos()
-        .filter(r => this.estaAprobado(r[1]))
-        .reduce((sum, r) => sum + r[2], 0);
+      return this.todasLasAsignaturas()
+        .filter(ramo => this.aprobados.includes(ramo[1]))
+        .reduce((total, ramo) => total + parseInt(ramo[2]), 0);
     },
     avance() {
-      return Math.round((this.creditosAprobados / this.totalCreditos) * 100);
+      return ((this.creditosAprobados / this.totalCreditos) * 100).toFixed(1);
     },
     promedioGeneral() {
-      const vals = Object.values(this.promedios)
-        .map(Number)
-        .filter(v => !isNaN(v));
-      if (!vals.length) return 0;
-      return (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2);
+      const notas = Object.values(this.promedios).map(n => parseFloat(n)).filter(n => !isNaN(n));
+      if (notas.length === 0) return "-";
+      const suma = notas.reduce((a, b) => a + b, 0);
+      return (suma / notas.length).toFixed(2);
     },
     ponderacionActual() {
-      return this.notas.reduce((sum, it) => sum + (it.porcentaje || 0), 0);
+      return this.notas.reduce((sum, n) => sum + (n.porcentaje || 0), 0);
     },
     promedioActual() {
-      const suma = this.notas.reduce(
-        (sum, it) => sum + ((it.nota || 0) * (it.porcentaje || 0)),
-        0
-      );
-      return this.ponderacionActual > 0
-        ? suma / this.ponderacionActual
-        : 0;
+      const total = this.notas.reduce((sum, n) => sum + ((n.nota || 0) * (n.porcentaje || 0)), 0);
+      return this.ponderacionActual ? total / this.ponderacionActual : 0;
     },
     notaNecesaria() {
       const restante = 100 - this.ponderacionActual;
-      if (restante <= 0) return 0;
-      const nota = (this.notaDeseada * 100 - this.promedioActual * this.ponderacionActual) / restante;
-      if (nota > 7) return '✘ Nota inalcanzable';
-      if (nota < 1) return '✔ Ya aseguraste la nota';
-      return nota;
+      if (restante <= 0) return "Completo";
+      const necesaria = ((this.notaDeseada * 100) - (this.promedioActual * this.ponderacionActual)) / restante;
+      return necesaria > 7 ? "No alcanza" : necesaria.toFixed(2);
     }
   },
-  mounted() {
-    // Cargar datos guardados al iniciar
-    const aprobadosGuardados = localStorage.getItem('aprobados');
-    const promediosGuardados = localStorage.getItem('promedios');
-    const modoGuardado = localStorage.getItem('modo');
-
-    if (aprobadosGuardados) {
-      try {
-        this.aprobados = JSON.parse(aprobadosGuardados);
-      } catch(e) {
-        this.aprobados = [];
-      }
-    }
-
-    if (promediosGuardados) {
-      try {
-        this.promedios = JSON.parse(promediosGuardados);
-      } catch(e) {
-        this.promedios = {};
-      }
-    }
-
-    if (modoGuardado) {
-      this.modo = modoGuardado;
-    }
-
-    document.body.classList.toggle('dark-mode', this.modo === 'oscuro');
-  },
-
   methods: {
-    todosLosRamos() {
+    todasLasAsignaturas() {
       return Object.values(this.semestres).flat();
+    },
+    cumpleFiltro(ramo) {
+      const codigo = ramo[1];
+      if (this.filtro === "todos") return true;
+      if (this.filtro === "aprobados") return this.aprobados.includes(codigo);
+      if (this.filtro === "faltantes") return !this.aprobados.includes(codigo);
+      return true;
     },
     estaAprobado(codigo) {
       return this.aprobados.includes(codigo);
     },
     puedeTomarse(ramo) {
-      const prereqs = ramo[5] || [];
-      return prereqs.every(cod => this.aprobados.includes(cod));
+      return ramo[5].every(prereq => this.aprobados.includes(prereq));
     },
-    getColor(tipo) {
-      if (tipo.startsWith("TI")) return this.colores["TI"][0];
-      return this.colores[tipo]?.[0] || "#ccc";
+    cuentaAprobados(prereqs) {
+      return prereqs.filter(c => this.aprobados.includes(c)).length;
     },
-    oggleAprobado(codigo) {
-      const ramo = this.todosLosRamos().find(r => r[1] === codigo);
-      if (!ramo) return;
+    toggleAprobado(codigo) {
+      const idx = this.aprobados.indexOf(codigo);
+      const ramo = this.todasLasAsignaturas().find(r => r[1] === codigo);
 
-      const prereqs = ramo[5] || [];
-      const faltan = prereqs.filter(c => !this.aprobados.includes(c));
-      if (faltan.length > 0) {
-        alert("Debes aprobar primero: " + faltan.join(", "));
-        return;
-      }
-
-      const i = this.aprobados.indexOf(codigo);
-      if (i === -1) {
+      if (idx >= 0) {
+        this.aprobados.splice(idx, 1);
+        delete this.promedios[codigo];
+        if (window.toastr && typeof toastr.warning === "function") {
+          toastr.warning(`Desmarcaste ${ramo[0]} (${codigo})`);
+        }
+      } else if (this.puedeTomarse(ramo)) {
         this.aprobados.push(codigo);
         if (window.toastr && typeof toastr.success === "function") {
           toastr.success(`Aprobaste ${ramo[0]} (${codigo})`);
-        } else {
-          console.log(`✔ Aprobaste ${ramo[0]} (${codigo})`);
-        }
-
-        const nuevos = this.todosLosRamos().filter(r => {
-          if (this.estaAprobado(r[1])) return false;
-          const prereqs = r[5] || [];
-          return prereqs.includes(codigo) && prereqs.every(p => this.aprobados.includes(p));
-        });
-
-        nuevos.forEach(r => {
-          if (window.toastr && typeof toastr.info === "function") {
-            toastr.info(`🔓 Se desbloqueó: ${r[0]} (${r[1]})`);
-          } else {
-            console.log(`🔓 Se desbloqueó: ${r[0]} (${r[1]})`);
-          }
-        });
-
-      } else {
-        this.aprobados.splice(i, 1);
-        delete this.promedios[codigo];
-        if (window.toastr && typeof toastr.warning === "function") {
-          toastr.warning(`Desmarcaste ${codigo}`);
-        } else {
-          console.log(`⚠ Desmarcaste ${codigo}`);
         }
       }
-
-      localStorage.setItem('aprobados', JSON.stringify(this.aprobados));
-      localStorage.setItem('promedios', JSON.stringify(this.promedios));
+      this.guardar();
     },
-
-    guardarPromedio(codigo, valor) {
-      if (!this.estaAprobado(codigo)) return;
-      this.$set(this.promedios, codigo, valor);
-      localStorage.setItem('promedios', JSON.stringify(this.promedios));
+    guardar() {
+      localStorage.setItem("aprobados", JSON.stringify(this.aprobados));
+      localStorage.setItem("promedios", JSON.stringify(this.promedios));
     },
     resetear() {
-      if (!confirm("¿Estás seguro que quieres reiniciar tu avance?")) return;
-      this.aprobados = [];
-      this.promedios = {};
-      this.notas = [{ nota: null, porcentaje: null }];
-      localStorage.removeItem('aprobados');
-      localStorage.removeItem('promedios');
+      if (confirm("¿Estás seguro que quieres reiniciar tu avance?")) {
+        this.aprobados = [];
+        this.promedios = {};
+        this.guardar();
+        if (window.toastr && typeof toastr.info === "function") {
+          toastr.info("Avance reiniciado");
+        }
+      }
     },
-    toggleModo() {
-      this.modo = this.modo === "oscuro" ? "claro" : "oscuro";
-      localStorage.setItem("modo", this.modo);
-      document.body.classList.toggle("dark-mode", this.modo === "oscuro");
-    },
-    exportarPDF() {
-      const app = document.getElementById("app");
-      document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
-      html2pdf().from(app).save("malla-arquitectura-uv.pdf").then(() => {
-        document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
-      });
-    },
-    cumpleFiltro(ramo) {
-      if (this.filtro === "todos") return true;
-      if (this.filtro === "aprobados") return this.estaAprobado(ramo[1]);
-      if (this.filtro === "faltantes") return !this.estaAprobado(ramo[1]);
-      return true;
-    },
-    cuentaAprobados(requisitos) {
-      if (!requisitos || requisitos.length === 0) return 0;
-      return requisitos.filter(r => this.aprobados.includes(r)).length;
+    guardarPromedio(codigo, nota) {
+      const n = parseFloat(nota);
+      if (n >= 1 && n <= 7) {
+        this.promedios[codigo] = n.toFixed(2);
+        this.guardar();
+      } else {
+        delete this.promedios[codigo];
+      }
     },
     agregarNota() {
       this.notas.push({ nota: null, porcentaje: null });
     },
-    eliminarNota(index) {
-      this.notas.splice(index, 1);
+    eliminarNota(i) {
+      this.notas.splice(i, 1);
+    },
+    getColor(tipo) {
+      return this.colores[tipo] || "#3f51b5";
+    },
+    toggleModo() {
+      this.modo = this.modo === "oscuro" ? "claro" : "oscuro";
+      document.body.classList.toggle("dark-mode", this.modo === "oscuro");
+      localStorage.setItem("modo", this.modo);
+    },
+    exportarPDF() {
+      const opt = {
+        margin: 0.2,
+        filename: `Malla-Arquitectura-${new Date().toLocaleDateString()}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "letter", orientation: "landscape" }
+      };
+      html2pdf().from(document.body).set(opt).save();
     }
   },
-template: `
-  <div>
-    <!-- PROGRESO Y PROMEDIO GENERAL -->
-    <div class="progreso">
-      <strong>Avance:</strong> {{ creditosAprobados }} / {{ totalCreditos }} créditos ({{ avance }}%)<br/>
-      <strong>Promedio general:</strong> {{ promedioGeneral }}
-      <div class="progress-bar">
-        <div class="progress-bar-fill" :style="{ width: avance + '%' }"></div>
-      </div>
-    </div>
-
-    <!-- BOTONES -->
-    <div class="botones no-print">
-      <button @click="resetear" class="danger">Reiniciar avance</button>
-      <button @click="toggleModo" class="toggle-mode">Modo {{ modo === 'oscuro' ? 'Claro' : 'Oscuro' }}</button>
-      <button @click="exportarPDF" class="success">Exportar a PDF</button>
-      <button @click="filtro = 'todos'">Ver todos</button>
-      <button @click="filtro = 'aprobados'">Ver aprobados</button>
-      <button @click="filtro = 'faltantes'">Ver faltantes</button>
-    </div>
-
-    <!-- MALLA -->
-    <div class="malla-horizontal">
-      <div v-for="(ramos, semestre) in semestres" :key="semestre" class="semestre">
-        <h2>{{ semestre.toUpperCase() }}</h2>
-        <div class="ramos">
-          <div
-            v-for="ramo in ramos"
-            v-if="cumpleFiltro(ramo)"
-            :key="ramo[1]"
-            class="ramo"
-            :style="{ backgroundColor: getColor(ramo[4]) }"
-            :class="{ 
-              aprobado: estaAprobado(ramo[1]), 
-              desactivado: !puedeTomarse(ramo)
-            }"
-            @click="toggleAprobado(ramo[1])"
-          >
-            <div class="ramo-header">
-              <span>{{ ramo[1] }}</span>
-              <span>{{ ramo[2] }}cr</span>
-            </div>
-            <div class="ramo-body">
-              {{ ramo[0] }}
-            </div>
-            <div class="ramo-footer">
-              <span class="badge" v-if="ramo[5].length > 0">
-                {{ cuentaAprobados(ramo[5]) }}/{{ ramo[5].length }}
-              </span>
-              <span class="badge" v-else>✓</span>
-              <input
-                v-if="estaAprobado(ramo[1])"
-                class="badge promedio-input"
-                :value="promedios[ramo[1]]"
-                @click.stop
-                @input="guardarPromedio(ramo[1], $event.target.value)"
-                placeholder="Nota"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CALCULADORA DE NOTAS -->
-    <div class="calculadora">
-      <h3 class="text-center mb-3">📊 Calculadora de Notas</h3>
-      <div class="formulario-notas">
-        <div class="nota-item" v-for="(item, index) in notas" :key="index">
-          <input type="number" v-model.number="item.nota" placeholder="Nota" min="1" max="7" step="0.1" />
-          <input type="number" v-model.number="item.porcentaje" placeholder="%" min="0" max="100" />
-          <button class="danger" @click="eliminarNota(index)">🗑️</button>
-        </div>
-        <button class="success" @click="agregarNota">Agregar Nota</button>
-      </div>
-      <div class="mt-3">
-        <label for="notaDeseada"><strong>Nota deseada:</strong></label>
-        <input id="notaDeseada" type="number" v-model.number="notaDeseada" min="1" max="7" step="0.1" />
-        <p><strong>Ponderación actual:</strong> {{ ponderacionActual }}%</p>
-        <p><strong>Promedio actual:</strong> {{ promedioActual.toFixed(2) }}</p>
-        <p><strong>Nota necesaria para llegar a {{ notaDeseada }}:</strong> {{ notaNecesaria }}</p>
-      </div>
-    </div>
-
-    <!-- TABLA DE PROMEDIOS -->
-    <div class="tabla-promedios">
-      <h3 class="text-center mb-3">📘 Promedios por Ramo Aprobado</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Ramo</th>
-            <th>Código</th>
-            <th>Nota</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="ramo in todosLosRamos()" v-if="estaAprobado(ramo[1])">
-            <td>{{ ramo[0] }}</td>
-            <td>{{ ramo[1] }}</td>
-            <td>
-              <input
-                type="number"
-                :value="promedios[ramo[1]]"
-                @input="guardarPromedio(ramo[1], $event.target.value)"
-                placeholder="Nota"
-                min="1" max="7" step="0.1"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="text-center mt-3">
-        <strong>Promedio general (ramos aprobados):</strong> {{ promedioGeneral }}
-      </div>
-    </div>
-  </div>
-`
+  mounted() {
+    if (this.modo === "oscuro") {
+      document.body.classList.add("dark-mode");
+    }
+  }
 });
