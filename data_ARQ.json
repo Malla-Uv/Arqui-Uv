@@ -1,1 +1,59 @@
-ola
+{
+	"Semestre 1": [
+		["Taller Integrado 1","TI11",28,0,"TI1",[],""],
+		["Taller De Autorregulacion","ARQS11",2,0,"SUV",[],""],
+	],
+	"Semestre 2": [
+		["Taller Integrado 2","TI12",28,0,"TI2",["TI11"],""],
+		["Taller De Nivelación, Comunicación y Lenguaje","ARQS12",2,0,"SUV",["ARQS11"],""],
+	],
+	"Semestre 3": [
+		["Taller Integrado 3","TIL21",26,0,"TIL",["TI12","ARQS12","ARQS11"],""],
+		["Complementario 1","ARQC21",2,0,"COMP1",["TI12","ARQS12"],""],
+		["Nivelación Inglés","ARQS21",2,0,"SUV",["TI11","TI12","ARQS11","ARQS12"],""],
+	],
+	"Semestre 4": [
+		["Taller Integrado 4","TIC21",26,0,"TIC",["TIL21"],""],
+		["Electivo 1","ARQE21",2,0,"E",["ARQS11","ARQS12"],""],
+		["Complemenrario 2","ARQC22",2,0,"COMP2",["ARQC21"],""],
+	],
+	"Semestre 5": [
+		["Taller Integrado 5","TIT21",26,0,"TIT",["TIC21"],""],
+		["Electivo 2","ARQE22",2,0,"E",["ARQE21"],""],
+		["Complementario 3","ARQC23",2,0,"COMP3",["ARQC22"],""],
+	],
+	"Semestre 6": [
+		["Taller Integrado 6 / Finalicación De Ciclo 1","TFC22",26,0,"TFC",["TIT21","TIC21","TIL21"],""],
+		["Vinculacion Con El Medio 1","ARQS22",4,0,"SUV",["ARQS21"],""],
+	],
+	"Semestre 7": [
+		["Taller Integrado 7","TIT31",26,0,"TIT2",["TFC22","ARQS21","ARQS22","ARQE21","ARQE22","ARQC23"],""],
+    ["Electivo 3","ARQE31",2,0,"E",["TFC22","ARQS21","ARQS22","ARQE21","ARQE22","ARQC23"],""],
+    ["Complementario 4","ARQC31",2,0,"COMP4",["TFC22","ARQS21","ARQS22","ARQE21","ARQE22","ARQC23"],""],
+    ["Vinculación Con El Medio 2","ARQS31",2,0,"SUV",["ARQS22"],""], 
+    ],
+
+	"Semestre 8": [
+		["Taller Integrado 8","TIC31",26,0,"TIC2",["TIT31"],""],
+    ["Electivo 4","ARQE32",2,0,"E",["ARQE31"],""],
+    ["Complementario 5","ARQC32",2,0,"COMP5",["ARQC31"],""],
+
+	],
+	"Semestre 9": [
+  	["Taller Integrado 9","TIL31",26,0,"TIL2",["TIC31"],""],
+    ["Electivo 5","ARQE33",2,0,"E",["ARQE32"],""],
+    ["Complementario 6","ARQC33",2,0,"COMP6",["ARQC32"],""],
+	],
+	"Semestre 10": [
+	  ["Taller Integrado 10 / Finalización De Ciclo 2","TFC32",26,0,"TFC2",["TIL31"],""],
+    ["Electivo 6","ARQE34",2,0,"E",["ARQE33"],""],
+	],
+	"Semestre 11": [
+	  ["Taller Integrado De Titulacion 1","TIT1",19,0,"T1",["TFC32"],""],  
+	  ["Gestión Profesional","ARQC41",3,0,"GP",["ARQC31","ARQC32","ARQC33"],""],
+          ["Practica Profesional","ARQC42",8,0,"PP",["ARQC31","ARQC32","ARQC33"],""],
+	],
+  "Semestre 12": [
+	  ["Taller Integrado De Titulacion 2","TIT2",30,0,"T12",["TIT1"],""],  
+    ]
+}
