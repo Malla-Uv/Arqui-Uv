@@ -173,39 +173,51 @@ new Vue({
       return this.colores[tipo]?.[0] || "#ccc";
     },
     toggleAprobado(codigo) {
-      const ramo = this.todosLosRamos().find(r => r[1] === codigo);
-      if (!ramo) return;
+  const ramo = this.todosLosRamos().find(r => r[1] === codigo);
+  if (!ramo) return;
 
-      const prereqs = ramo[5] || [];
-      const faltan = prereqs.filter(c => !this.aprobados.includes(c));
-      if (faltan.length > 0) {
-        alert("Debes aprobar primero: " + faltan.join(", "));
-        return;
+  const prereqs = ramo[5] || [];
+  const faltan = prereqs.filter(c => !this.aprobados.includes(c));
+  if (faltan.length > 0) {
+    alert("Debes aprobar primero: " + faltan.join(", "));
+    return;
+  }
+
+  const i = this.aprobados.indexOf(codigo);
+  if (i === -1) {
+    this.aprobados.push(codigo);
+
+    // ✅ Toastr seguro
+    if (window.toastr && typeof toastr.success === "function") {
+      toastr.success(`Aprobaste ${ramo[0]} (${codigo})`);
+    }
+
+    const nuevos = this.todosLosRamos().filter(r => {
+      if (this.estaAprobado(r[1])) return false;
+      const prereqs = r[5] || [];
+      return prereqs.includes(codigo) && prereqs.every(p => this.aprobados.includes(p));
+    });
+
+    nuevos.forEach(r => {
+      if (window.toastr && typeof toastr.info === "function") {
+        toastr.info(`🔓 Se desbloqueó: ${r[0]} (${r[1]})`);
       }
+    });
 
-      const i = this.aprobados.indexOf(codigo);
-      if (i === -1) {
-        this.aprobados.push(codigo);
-        if (typeof toastr !== "undefined") toastr.success(`Aprobaste ${ramo[0]} (${codigo})`);
+  } else {
+    this.aprobados.splice(i, 1);
+    delete this.promedios[codigo];
 
-        const nuevos = this.todosLosRamos().filter(r => {
-          if (this.estaAprobado(r[1])) return false;
-          const prereqs = r[5] || [];
-          return prereqs.includes(codigo) && prereqs.every(p => this.aprobados.includes(p));
-        });
-        nuevos.forEach(r => {
-          if (typeof toastr !== "undefined") toastr.info(`🔓 Se desbloqueó: ${r[0]} (${r[1]})`);
-        });
+    // ✅ Toastr seguro
+    if (window.toastr && typeof toastr.warning === "function") {
+      toastr.warning(`Desmarcaste ${codigo}`);
+    }
+  }
 
-      } else {
-        this.aprobados.splice(i, 1);
-        delete this.promedios[codigo];
-        if (typeof toastr !== "undefined") toastr.warning(`Desmarcaste ${codigo}`);
-      }
+  localStorage.setItem('aprobados', JSON.stringify(this.aprobados));
+  localStorage.setItem('promedios', JSON.stringify(this.promedios));
+},
 
-      localStorage.setItem('aprobados', JSON.stringify(this.aprobados));
-      localStorage.setItem('promedios', JSON.stringify(this.promedios));
-    },
     guardarPromedio(codigo, valor) {
       if (!this.estaAprobado(codigo)) return;
       this.$set(this.promedios, codigo, valor);
