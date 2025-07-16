@@ -187,7 +187,7 @@ new Vue({
       if (i === -1) {
         this.aprobados.push(codigo);
         if (window.toastr && typeof toastr.success === "function") {
-          toastr.successtoastr.success(`Aprobaste ${ramo[0]} (${codigo})`);
+          toastr.success(`Aprobaste ${ramo[0]} (${codigo})`);
         } else {
           console.log(`✔ Aprobaste ${ramo[0]} (${codigo})`);
         }
@@ -211,9 +211,9 @@ new Vue({
         this.aprobados.splice(i, 1);
         delete this.promedios[codigo];
         if (window.toastr && typeof toastr.warning === "function") {
-          toastr.warning(Desmarcaste ${codigo});
+         toastr.warning(`⚠ Desmarcaste ${codigo}`);
         } else {
-          console.log(⚠ Desmarcaste ${codigo});
+          console.log(`⚠ Desmarcaste ${codigo}`);
         }
       }
 
