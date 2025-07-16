@@ -24,7 +24,7 @@ const data = {
   ],
   "Semestre 6": [
     ["Taller Integrado 6 / Finalización De Ciclo 1", "TFC22", 26, 0, "TFC", ["TIT21", "TIC21", "TIL21"], ""],
-    ["Vinculación Con El Medio 1", "ARQS22", 4, 0, "SUV", ["ARQS21","ARQTIT21"], ""],
+    ["Vinculación Con El Medio 1", "ARQS22", 4, 0, "SUV", ["ARQS21","TIT21"], ""],
   ],
   "Semestre 7": [
     ["Taller Integrado 7", "TIT31", 26, 0, "TI", ["TFC22", "ARQS21", "ARQS22", "ARQE21", "ARQE22", "ARQC23"], ""],
