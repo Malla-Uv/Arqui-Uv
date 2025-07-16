@@ -14,7 +14,7 @@ const data = {
   ],
   "Semestre 4": [
     ["Taller Integrado 4", "TIC21", 26, 0, "TI", ["TIL21"], ""],
-    ["Electivo 1", "ARQE21", 2, 0, "E", ["ARQS11", "ARQS12","ARQTI12"], ""],
+    ["Electivo 1", "ARQE21", 2, 0, "E", ["ARQS11", "ARQS12","TI12"], ""],
     ["Complementario 2", "ARQC22", 2, 0, "COMP2", ["ARQC21"], ""],
   ],
   "Semestre 5": [
