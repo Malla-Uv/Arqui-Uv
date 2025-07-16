@@ -1,1 +1,24 @@
-d
+{
+  "TI1": ["#f94144", "Taller Integrado 1"],
+  "TI2": ["#f3722c", "Taller Integrado 2"],
+  "TIL": ["#f8961e", "Taller Integrado 3"],
+  "TIC": ["#f9844a", "Taller Integrado 4"],
+  "TIT": ["#f9c74f", "Taller Integrado 5"],
+  "TFC": ["#90be6d", "Finalización de Ciclo 1"],
+  "TIT2": ["#43aa8b", "Taller Integrado 7"],
+  "TIC2": ["#577590", "Taller Integrado 8"],
+  "TIL2": ["#277da1", "Taller Integrado 9"],
+  "TFC2": ["#4d908e", "Finalización de Ciclo 2"],
+  "T1": ["#277da1", "Titulación 1"],
+  "T12": ["#1d3557", "Titulación 2"],
+  "SUV": ["#adb5bd", "Talleres de Formación Común"],
+  "COMP1": ["#a3c9a8", "Complementario 1"],
+  "COMP2": ["#76b5c5", "Complementario 2"],
+  "COMP3": ["#d4a5a5", "Complementario 3"],
+  "COMP4": ["#e5989b", "Complementario 4"],
+  "COMP5": ["#b5838d", "Complementario 5"],
+  "COMP6": ["#6d6875", "Complementario 6"],
+  "E": ["#ffc300", "Electivos"],
+  "GP": ["#bdb2ff", "Gestión Profesional"],
+  "PP": ["#ffadad", "Práctica Profesional"]
+}
