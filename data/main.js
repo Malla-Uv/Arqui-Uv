@@ -129,7 +129,7 @@ new Vue({
     }
   },
   mounted() {
-    // Al cargar la app, recuperamos datos guardados en localStorage
+    // Cargar datos guardados al iniciar
     const aprobadosGuardados = localStorage.getItem('aprobados');
     const promediosGuardados = localStorage.getItem('promedios');
     const modoGuardado = localStorage.getItem('modo');
@@ -186,7 +186,7 @@ new Vue({
       const i = this.aprobados.indexOf(codigo);
       if (i === -1) {
         this.aprobados.push(codigo);
-        toastr.success(`Aprobaste ${ramo[0]} (${codigo})`);
+        if (typeof toastr !== "undefined") toastr.success(`Aprobaste ${ramo[0]} (${codigo})`);
 
         const nuevos = this.todosLosRamos().filter(r => {
           if (this.estaAprobado(r[1])) return false;
@@ -194,16 +194,15 @@ new Vue({
           return prereqs.includes(codigo) && prereqs.every(p => this.aprobados.includes(p));
         });
         nuevos.forEach(r => {
-          toastr.info(`🔓 Se desbloqueó: ${r[0]} (${r[1]})`);
+          if (typeof toastr !== "undefined") toastr.info(`🔓 Se desbloqueó: ${r[0]} (${r[1]})`);
         });
 
       } else {
         this.aprobados.splice(i, 1);
         delete this.promedios[codigo];
-        toastr.warning(`Desmarcaste ${codigo}`);
+        if (typeof toastr !== "undefined") toastr.warning(`Desmarcaste ${codigo}`);
       }
 
-      // Guardamos el estado en localStorage
       localStorage.setItem('aprobados', JSON.stringify(this.aprobados));
       localStorage.setItem('promedios', JSON.stringify(this.promedios));
     },
