@@ -172,7 +172,7 @@ new Vue({
       if (tipo.startsWith("TI")) return this.colores["TI"][0];
       return this.colores[tipo]?.[0] || "#ccc";
     },
-    oggleAprobado(codigo) {
+    toggleAprobado(codigo) {
       const ramo = this.todosLosRamos().find(r => r[1] === codigo);
       if (!ramo) return;
 
@@ -186,41 +186,26 @@ new Vue({
       const i = this.aprobados.indexOf(codigo);
       if (i === -1) {
         this.aprobados.push(codigo);
-        if (window.toastr && typeof toastr.success === "function") {
-          toastr.success(`Aprobaste ${ramo[0]} (${codigo})`);
-        } else {
-          console.log(`✔ Aprobaste ${ramo[0]} (${codigo})`);
-        }
+        if (typeof toastr !== "undefined") toastr.success(Aprobaste ${ramo[0]} (${codigo}));
 
         const nuevos = this.todosLosRamos().filter(r => {
           if (this.estaAprobado(r[1])) return false;
           const prereqs = r[5] || [];
           return prereqs.includes(codigo) && prereqs.every(p => this.aprobados.includes(p));
         });
-
         nuevos.forEach(r => {
-          if (window.toastr && typeof toastr.info === "function") {
-           toastr.info(`🔓 Se desbloqueó: ${r[0]} (${r[1]})`);
-          } else {
-            console.log(`🔓 Se desbloqueó: ${r[0]} (${r[1]})`);
-
-          }
+          if (typeof toastr !== "undefined") toastr.info(🔓 Se desbloqueó: ${r[0]} (${r[1]}));
         });
 
       } else {
         this.aprobados.splice(i, 1);
         delete this.promedios[codigo];
-        if (window.toastr && typeof toastr.warning === "function") {
-         toastr.warning(`⚠ Desmarcaste ${codigo}`);
-        } else {
-          console.log(`⚠ Desmarcaste ${codigo}`);
-        }
+        if (typeof toastr !== "undefined") toastr.warning(Desmarcaste ${codigo});
       }
 
       localStorage.setItem('aprobados', JSON.stringify(this.aprobados));
       localStorage.setItem('promedios', JSON.stringify(this.promedios));
     },
-
     guardarPromedio(codigo, valor) {
       if (!this.estaAprobado(codigo)) return;
       this.$set(this.promedios, codigo, valor);
@@ -263,7 +248,7 @@ new Vue({
       this.notas.splice(index, 1);
     }
   },
-template: `
+template: 
   <div>
     <!-- PROGRESO Y PROMEDIO GENERAL -->
     <div class="progreso">
@@ -379,5 +364,5 @@ template: `
       </div>
     </div>
   </div>
-`
+
 });
