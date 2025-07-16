@@ -324,9 +324,11 @@ template: `
         <button class="success" @click="agregarNota">Agregar Nota</button>
       </div>
       <div class="mt-3">
+        <label for="notaDeseada"><strong>Nota deseada:</strong></label>
+        <input id="notaDeseada" type="number" v-model.number="notaDeseada" min="1" max="7" step="0.1" />
         <p><strong>Ponderación actual:</strong> {{ ponderacionActual }}%</p>
         <p><strong>Promedio actual:</strong> {{ promedioActual.toFixed(2) }}</p>
-        <p><strong>Nota necesaria para {{ notaDeseada }}:</strong> {{ notaNecesaria }}</p>
+        <p><strong>Nota necesaria para llegar a {{ notaDeseada }}:</strong> {{ notaNecesaria }}</p>
       </div>
     </div>
 
@@ -357,6 +359,9 @@ template: `
           </tr>
         </tbody>
       </table>
+      <div class="text-center mt-3">
+        <strong>Promedio general (ramos aprobados):</strong> {{ promedioGeneral }}
+      </div>
     </div>
   </div>
 `
