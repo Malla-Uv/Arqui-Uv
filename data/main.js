@@ -248,8 +248,7 @@ new Vue({
       this.notas.splice(index, 1);
     }
   },
-
-  template: `
+template: `
   <div>
     <!-- PROGRESO Y PROMEDIO GENERAL -->
     <div class="progreso">
@@ -312,5 +311,53 @@ new Vue({
         </div>
       </div>
     </div>
-  </div>`
+
+    <!-- CALCULADORA DE NOTAS -->
+    <div class="calculadora">
+      <h3 class="text-center mb-3">📊 Calculadora de Notas</h3>
+      <div class="formulario-notas">
+        <div class="nota-item" v-for="(item, index) in notas" :key="index">
+          <input type="number" v-model.number="item.nota" placeholder="Nota" min="1" max="7" step="0.1" />
+          <input type="number" v-model.number="item.porcentaje" placeholder="%" min="0" max="100" />
+          <button class="danger" @click="eliminarNota(index)">🗑️</button>
+        </div>
+        <button class="success" @click="agregarNota">Agregar Nota</button>
+      </div>
+      <div class="mt-3">
+        <p><strong>Ponderación actual:</strong> {{ ponderacionActual }}%</p>
+        <p><strong>Promedio actual:</strong> {{ promedioActual.toFixed(2) }}</p>
+        <p><strong>Nota necesaria para {{ notaDeseada }}:</strong> {{ notaNecesaria }}</p>
+      </div>
+    </div>
+
+    <!-- TABLA DE PROMEDIOS -->
+    <div class="tabla-promedios">
+      <h3 class="text-center mb-3">📘 Promedios por Ramo Aprobado</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Ramo</th>
+            <th>Código</th>
+            <th>Nota</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="ramo in todosLosRamos()" v-if="estaAprobado(ramo[1])">
+            <td>{{ ramo[0] }}</td>
+            <td>{{ ramo[1] }}</td>
+            <td>
+              <input
+                type="number"
+                :value="promedios[ramo[1]]"
+                @input="guardarPromedio(ramo[1], $event.target.value)"
+                placeholder="Nota"
+                min="1" max="7" step="0.1"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+`
 });
