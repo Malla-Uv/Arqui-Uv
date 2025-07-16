@@ -1,7 +1,7 @@
 {
   "name": "Malla Interactiva Arquitectura UV",
   "short_name": "Malla Arqui UV",
-  "start_url": ".",
+  "start_url": "/Arqui_Uv/index.html",
   "display": "standalone",
   "background_color": "#f5f5f5",
   "theme_color": "#5cb85c",
