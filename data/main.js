@@ -248,7 +248,7 @@ new Vue({
       this.notas.splice(index, 1);
     }
   },
-template: 
+template: `
   <div>
     <!-- PROGRESO Y PROMEDIO GENERAL -->
     <div class="progreso">
@@ -364,5 +364,5 @@ template:
       </div>
     </div>
   </div>
-
+`
 });
