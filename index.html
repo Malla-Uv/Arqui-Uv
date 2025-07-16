@@ -2,126 +2,69 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Malla Interactiva Arquitectura UV</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📐Malla Interactiva Arquitectura UV🏛️</title>
 
-  <!-- Manifest y Favicon -->
+  <!-- PWA: Manifest y color de tema -->
   <link rel="manifest" href="data/manifest.json" />
-  <link rel="icon" href="data/icon-192.png" />
+  <meta name="theme-color" content="#5cb85c" />
 
-  <!-- Estilos -->
+  <!-- PWA: Icono favicon -->
+  <link rel="icon" href="data/icon-192.png" type="image/png" />
+
+  <!-- PWA: Compatibilidad con iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Malla Arqui UV" />
+  <link rel="apple-touch-icon" href="data/icon-192.png" />
+
+  <!-- PWA: Android -->
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <!-- Toastr para notificaciones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+
+  <!-- Estilos personalizados -->
   <link rel="stylesheet" href="data/style.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-
-  <!-- Librerías externas -->
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 </head>
-
 <body>
-  <div id="app" class="container">
 
-    <h1>Malla Interactiva Arquitectura UV</h1>
+  <!-- TÍTULO PRINCIPAL -->
+  <header class="container text-center my-4">
+    <h1 class="fw-bold display-5">📐 Malla Interactiva Arquitectura UV 🏛️</h1>
+  </header>
 
-    <!-- Barra de progreso -->
-    <div class="progreso">
-      Avance: {{ avance }}% ({{ creditosAprobados }}/{{ totalCreditos }} créditos)
-      <div class="progress-bar">
-        <div class="progress-bar-fill" :style="{ width: avance + '%' }"></div>
-      </div>
-    </div>
-
-    <!-- Botones -->
-    <div class="botones">
-      <button @click="filtro = 'todos'">Todos</button>
-      <button @click="filtro = 'aprobados'">Aprobados</button>
-      <button @click="filtro = 'faltantes'">Faltantes</button>
-      <button class="danger" @click="resetear()">Reiniciar</button>
-      <button class="success" @click="exportarPDF()">Exportar PDF</button>
-      <button class="toggle-mode" @click="toggleModo()">Modo {{ modo === 'oscuro' ? 'Claro' : 'Oscuro' }}</button>
-    </div>
-
-    <!-- Malla por semestre -->
-    <div class="malla-horizontal">
-      <div class="semestre" v-for="(ramos, semestre) in semestres" :key="semestre">
-        <h2>{{ semestre }}</h2>
-        <div class="ramos">
-          <div
-            class="ramo"
-            :style="{ backgroundColor: getColor(ramo[3]) }"
-            v-for="ramo in ramos"
-            :key="ramo[1]"
-            :class="{ aprobado: estaAprobado(ramo[1]), desactivado: !puedeTomarse(ramo) }"
-            @click="toggleAprobado(ramo[1])"
-          >
-            <div class="ramo-header">
-              <span>{{ ramo[1] }}</span>
-              <span>{{ ramo[2] }}cr</span>
-            </div>
-            <div class="ramo-body">{{ ramo[0] }}</div>
-            <div class="ramo-footer">
-              <span>{{ ramo[3] }}</span>
-              <span class="badge">{{ cuentaAprobados(ramo[5]) }}/{{ ramo[5].length }}</span>
-            </div>
-            <div class="promedio-input">
-              <input
-                type="number"
-                step="0.1"
-                min="1"
-                max="7"
-                :value="promedios[ramo[1]] || ''"
-                @input="guardarPromedio(ramo[1], $event.target.value)"
-                placeholder="Nota"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Calculadora de promedio ponderado -->
-    <div class="calculadora">
-      <h2>Cálculo de nota final</h2>
-      <div class="formulario-notas">
-        <div class="nota-item" v-for="(n, i) in notas" :key="i">
-          <input type="number" v-model.number="n.nota" placeholder="Nota" min="1" max="7" step="0.1" />
-          <input type="number" v-model.number="n.porcentaje" placeholder="%" min="1" max="100" />
-          <button @click="eliminarNota(i)">Eliminar</button>
-        </div>
-        <button @click="agregarNota()">Agregar Nota</button>
-      </div>
-      <p>Ponderado actual: {{ ponderacionActual }}%</p>
-      <p>Promedio actual: {{ promedioActual.toFixed(2) }}</p>
-      <input type="number" v-model.number="notaDeseada" placeholder="Nota deseada" min="1" max="7" step="0.1" />
-      <p>Nota necesaria: <strong>{{ notaNecesaria }}</strong></p>
-    </div>
-
-    <!-- Tabla de promedios -->
-    <div class="tabla-promedios">
-      <h2>Promedios por ramo</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Ramo</th>
-            <th>Código</th>
-            <th>Nota</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="ramo in todasLasAsignaturas()" :key="ramo[1]" v-if="promedios[ramo[1]]">
-            <td>{{ ramo[0] }}</td>
-            <td>{{ ramo[1] }}</td>
-            <td>{{ promedios[ramo[1]] }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p><strong>Promedio general:</strong> {{ promedioGeneral }}</p>
-    </div>
+  <!-- APP VUE -->
+  <div class="container mb-5">
+    <div id="app"></div>
   </div>
 
-  <!-- Script principal -->
-  <script type="module" src="data/main.js"></script>
+  <!-- LIBRERÍAS JS Y CSS (orden corregido) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<!-- Otras librerías necesarias -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-chartjs@3.5.1/dist/vue-chartjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ARCHIVO PRINCIPAL -->
+<script src="data/main.js"></script>
+
+  <!-- REGISTRO DEL SERVICE WORKER -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('data/service-worker.js')
+          .then(reg => console.log('✔ Service Worker registrado:', reg))
+          .catch(err => console.warn('✘ Error al registrar Service Worker:', err));
+      });
+    }
+  </script>
+
 </body>
 </html>
