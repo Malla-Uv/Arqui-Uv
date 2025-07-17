@@ -157,7 +157,7 @@ new Vue({
       document.body.classList.toggle('oscuro', this.modo === 'oscuro');
     }
     });
-},
+}
 
   methods: {
     todosLosRamos() {
