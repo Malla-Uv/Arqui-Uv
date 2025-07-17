@@ -156,6 +156,7 @@ new Vue({
       this.modo = e.matches ? 'oscuro' : 'claro';
       document.body.classList.toggle('oscuro', this.modo === 'oscuro');
     }
+    });
 },
 
   methods: {
