@@ -129,34 +129,37 @@ new Vue({
     }
   },
   mounted() {
-  // Recuperar ramos aprobados y promedios desde localStorage
+  // Cargar datos guardados al iniciar
   const aprobadosGuardados = localStorage.getItem('aprobados');
-  if (aprobadosGuardados) {
-    this.aprobados = JSON.parse(aprobadosGuardados);
-  }
-
   const promediosGuardados = localStorage.getItem('promedios');
-  if (promediosGuardados) {
-    this.promedios = JSON.parse(promediosGuardados);
-  }
+  const modoGuardado = localStorage.getItem('modo');
 
-  // Detectar modo oscuro automático si no hay uno guardado
-  if (!localStorage.getItem('modo')) {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    this.modo = prefersDark ? 'oscuro' : 'claro';
-    localStorage.setItem('modo', this.modo);
-  }
-
-  // Aplicar clase al <body> según el modo
-  document.body.classList.toggle('oscuro', this.modo === 'oscuro');
-
-  // Escuchar cambios en el tema del sistema (si no hay preferencia manual)
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    if (!localStorage.getItem('modo')) {
-      this.modo = e.matches ? 'oscuro' : 'claro';
-      document.body.classList.toggle('oscuro', this.modo === 'oscuro');
+  if (aprobadosGuardados) {
+    try {
+      this.aprobados = JSON.parse(aprobadosGuardados);
+    } catch (e) {
+      this.aprobados = [];
     }
-    });
+  }
+
+  if (promediosGuardados) {
+    try {
+      this.promedios = JSON.parse(promediosGuardados);
+    } catch (e) {
+      this.promedios = {};
+    }
+  }
+
+  // Si no hay modo guardado, usar el del sistema
+  if (!modoGuardado) {
+    const prefiereOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    this.modo = prefiereOscuro ? 'oscuro' : 'claro';
+  } else {
+    this.modo = modoGuardado;
+  }
+
+  // Aplicar clase al body según el modo actual
+  document.body.classList.toggle('dark-mode', this.modo === 'oscuro');
 }
 
   methods: {
