@@ -1,4 +1,4 @@
-const data = {
+Main.js: const data = {
   "Semestre 1": [
     ["Taller Integrado 1", "TI11", 28, 0, "TI", [], ""],
     ["Taller De Autorregulacion", "ARQS11", 2, 0, "SUV", [], ""],
@@ -129,38 +129,33 @@ new Vue({
     }
   },
   mounted() {
-  // Cargar datos guardados al iniciar
-  const aprobadosGuardados = localStorage.getItem('aprobados');
-  const promediosGuardados = localStorage.getItem('promedios');
-  const modoGuardado = localStorage.getItem('modo');
+    // Cargar datos guardados al iniciar
+    const aprobadosGuardados = localStorage.getItem('aprobados');
+    const promediosGuardados = localStorage.getItem('promedios');
+    const modoGuardado = localStorage.getItem('modo');
 
-  if (aprobadosGuardados) {
-    try {
-      this.aprobados = JSON.parse(aprobadosGuardados);
-    } catch (e) {
-      this.aprobados = [];
+    if (aprobadosGuardados) {
+      try {
+        this.aprobados = JSON.parse(aprobadosGuardados);
+      } catch(e) {
+        this.aprobados = [];
+      }
     }
-  }
 
-  if (promediosGuardados) {
-    try {
-      this.promedios = JSON.parse(promediosGuardados);
-    } catch (e) {
-      this.promedios = {};
+    if (promediosGuardados) {
+      try {
+        this.promedios = JSON.parse(promediosGuardados);
+      } catch(e) {
+        this.promedios = {};
+      }
     }
-  }
 
-  // Si no hay modo guardado, usar el del sistema
-  if (!modoGuardado) {
-    const prefiereOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    this.modo = prefiereOscuro ? 'oscuro' : 'claro';
-  } else {
-    this.modo = modoGuardado;
-  }
+    if (modoGuardado) {
+      this.modo = modoGuardado;
+    }
 
-  // Aplicar clase al body según el modo actual
-  document.body.classList.toggle('dark-mode', this.modo === 'oscuro');
-}
+    document.body.classList.toggle('dark-mode', this.modo === 'oscuro');
+  },
 
   methods: {
     todosLosRamos() {
