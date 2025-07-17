@@ -1,4 +1,4 @@
-Main.js: const data = {
+const data = {
   "Semestre 1": [
     ["Taller Integrado 1", "TI11", 28, 0, "TI", [], ""],
     ["Taller De Autorregulacion", "ARQS11", 2, 0, "SUV", [], ""],
