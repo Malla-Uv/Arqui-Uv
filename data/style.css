@@ -247,7 +247,7 @@ button.toggle-mode {
 body.dark-mode {
   background: #121212;
   color: white;
-  --color-tachado: #90ee90; /* verde claro para tachado en oscuro */
+  --color-tachado: red; /* rojo para tachado en oscuro */
 }
 
 body.dark-mode .progreso,
